@@ -32,7 +32,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages-${{ github.run_id }}
+          name: github-pages-${{ github.run_id }}-${{ github.sha }}
           path: ./site
 
   deploy:
@@ -55,7 +55,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: github-pages-${{ github.run_id }}
+          name: github-pages-${{ github.run_id }}-${{ github.sha }}
           path: ./site
 
       - name: List site directory after download
@@ -76,7 +76,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact-${{ github.run_id }}
+          name: my-artifact-${{ github.run_id }}-${{ github.sha }}
           path: file-${{ matrix.runs-on }}.txt
 
   download:
@@ -86,7 +86,7 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: my-artifact-${{ github.run_id }}
+          name: my-artifact-${{ github.run_id }}-${{ github.sha }}
           path: my-artifact
       - run: ls -R my-artifact
 
