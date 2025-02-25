@@ -26,8 +26,12 @@ jobs:
         run: |
           mkdocs build
 
+      - name: Check if site directory exists
+        run: |
+          if [ -d "./site" ]; then echo "Directory exists"; else echo "Directory does not exist"; fi
+
       - name: List site directory before upload
-        run: ls -la ./site
+        run: ls -la ./site || echo "Site directory not found"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
@@ -64,3 +68,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
