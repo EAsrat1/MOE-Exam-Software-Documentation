@@ -26,6 +26,9 @@ jobs:
         run: |
           mkdocs build
 
+      - name: List site directory
+        run: ls -la ./site
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
