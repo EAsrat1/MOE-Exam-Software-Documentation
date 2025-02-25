@@ -37,33 +37,29 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mkdocs-site
-          path: ./site  
- deploy:
-  if: github.ref == 'refs/heads/main'
-  runs-on: ubuntu-latest
-  needs: build
+          path: ./site
 
-  permissions:
-    pages: write
-    id-token: write
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
 
-  environment:
-    name: github-pages
-    url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: site
-        path: ./site
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: mkdocs-site
+          path: ./site
 
-    - name: List site directory after download
-      run: ls -la ./site
+      - name: List site directory after download
+        run: ls -la ./site
 
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v2
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
