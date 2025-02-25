@@ -26,35 +26,36 @@ jobs:
         run: |
           mkdocs build
 
-      - name: Check if site directory exists
-        run: |
-          if [ -d "./site" ]; then echo "Directory exists"; else echo "Directory does not exist"; fi
-
       - name: List site directory before upload
-        run: ls -la ./site || echo "Site directory not found"
+        run: ls -la ./site
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: mkdocs-site
+          name: site
           path: ./site
 
   deploy:
-    needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    needs: build
 
     permissions:
       pages: write
       id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: mkdocs-site
+          name: site
           path: ./site
 
       - name: List site directory after download
@@ -63,3 +64,28 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
+  upload:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - name: Create a File
+        run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: file-${{ matrix.runs-on }}.txt
+
+  download:
+    needs: upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: my-artifact
+          path: my-artifact
+      - run: ls -R my-artifact
