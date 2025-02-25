@@ -63,7 +63,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
 
   upload:
     strategy:
@@ -76,7 +76,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact # NOTE: same artifact name
+          name: my-artifact
           path: file-${{ matrix.runs-on }}.txt
 
   download:
