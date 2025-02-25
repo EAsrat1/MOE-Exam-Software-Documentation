@@ -32,7 +32,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: site
+          name: github-pages
           path: ./site
 
   deploy:
@@ -55,8 +55,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: site
+          name: github-pages
           path: ./site
+
+      - name: List site directory after download
+        run: ls -la ./site
 
       - name: Deploy to GitHub Pages
         id: deployment
