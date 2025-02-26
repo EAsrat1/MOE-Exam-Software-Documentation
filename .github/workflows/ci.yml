@@ -15,7 +15,7 @@ jobs:
       - name: Create a File
         run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: my-artifact
           path: file-${{ matrix.runs-on }}.txt
