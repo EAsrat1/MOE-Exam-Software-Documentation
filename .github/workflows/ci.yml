@@ -32,44 +32,34 @@ jobs:
       - run: ls -R my-artifact
 
   build:
-    runs-on: ubuntu-latest
     needs: upload
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install mkdocs mkdocs-material
-
       - name: Install markdownlint-cli2
         run: |
           npm install -g markdownlint-cli2
-
       - name: Change to github-changelog directory
         run: cd github-changelog
-
       - name: Show git log of main branch
         run: git log main
-
       - name: Build MkDocs site
         run: mkdocs build
-
       - name: Remove symlinks and hard links
         run: |
           find site -type l -exec rm -f {} \;
-
       - name: Ensure size limit
         run: |
           TOTAL_SIZE=$(du -sh site | cut -f1)
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
@@ -78,30 +68,26 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
     needs: build
-
+    runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: github-pages
           path: ./site
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
 
 
 
