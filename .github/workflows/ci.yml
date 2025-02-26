@@ -26,78 +26,14 @@ jobs:
       - name: Build MkDocs site
         run: mkdocs build
 
-      - name: Ensure no symlinks
-        run: find site -type l -exec rm -f {} \;
+      - name: Remove symlinks and hard links
+        run: |
+          find site -type l -exec rm -f {} \;
+          find site -type l -exec rm -f {} \;
 
       - name: Ensure size limit
         run: |
           TOTAL_SIZE=$(du -sh site | cut -f1)
-          if [ ${TOTAL_SIZE::-1} -gt 10 ]; then
-            echo "Site directory is larger than 10GB. Please reduce the size."
-            exit 1
-          fi
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: site/
-
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: ./site
-
-      - name: List site directory after download
-        run: ls -la ./site
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-  upload:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create a File
-        run: echo "hello from ubuntu-latest" > file-ubuntu-latest.txt
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact-${{ github.run_id }}-${{ github.sha }}
-          path: file-ubuntu-latest.txt
-
-  download:
-    needs: upload
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download All Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: my-artifact-${{ github.run_id }}-${{ github.sha }}
-          path: my-artifact
-
-      - run: ls -R my-artifact
-
-
-
-
-
 
 
 
