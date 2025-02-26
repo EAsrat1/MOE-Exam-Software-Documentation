@@ -26,6 +26,17 @@ jobs:
       - name: Build MkDocs site
         run: mkdocs build
 
+      - name: Ensure no symlinks
+        run: find site -type l -exec rm -f {} \;
+
+      - name: Ensure size limit
+        run: |
+          TOTAL_SIZE=$(du -sh site | cut -f1)
+          if [ ${TOTAL_SIZE::-1} -gt 10 ]; then
+            echo "Site directory is larger than 10GB. Please reduce the size."
+            exit 1
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
