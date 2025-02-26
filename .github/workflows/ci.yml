@@ -7,21 +7,31 @@ on:
 
 jobs:
   upload:
-    strategy:
-      matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Create a File
-        run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
+      - name: Create a file
+        run: echo "hello world" > my-file.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          path: file-${{ matrix.runs-on }}.txt
+          path: my-file.txt
+
+  upload-again:
+    needs: upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a different file
+        run: echo "goodbye world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: my-file.txt
+          overwrite: true
 
   download:
-    needs: upload
+    needs: upload-again
     runs-on: ubuntu-latest
     steps:
       - name: Download All Artifacts
@@ -32,7 +42,7 @@ jobs:
       - run: ls -R my-artifact
 
   build:
-    needs: upload
+    needs: upload-again
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
