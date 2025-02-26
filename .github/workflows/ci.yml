@@ -27,6 +27,12 @@ jobs:
         run: |
           npm install -g markdownlint-cli2
 
+      - name: Change to github-changelog directory
+        run: cd github-changelog
+
+      - name: Show git log of main branch
+        run: git log main
+
       - name: Build MkDocs site
         run: mkdocs build
 
@@ -70,6 +76,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
 
 
 
