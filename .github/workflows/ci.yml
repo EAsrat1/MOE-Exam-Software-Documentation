@@ -29,11 +29,27 @@ jobs:
       - name: Remove symlinks and hard links
         run: |
           find site -type l -exec rm -f {} \;
-          find site -type l -exec rm -f {} \;
 
       - name: Ensure size limit
         run: |
           TOTAL_SIZE=$(du -sh site | cut -f1)
+          echo "Total site size: $TOTAL_SIZE"
+
+      - name: Lint Markdown files
+        run: |
+          pip install markdownlint-cli2
+          npx markdownlint-cli2 '**/*.md'
+
+      - name: Check for broken links
+        run: |
+          pip install linkchecker
+          linkchecker site/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: site
 
 
 
