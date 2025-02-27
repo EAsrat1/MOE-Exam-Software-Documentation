@@ -15,11 +15,14 @@ jobs:
         run: |
           mkdir site
           echo "My GitHub Pages site" > site/index.html
+      - name: Confirm site directory exists
+        run: ls -R site/
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
           path: site/
+          retention-days: 5
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -39,6 +42,8 @@ jobs:
         with:
           name: github-pages
           path: ./site
+      - name: Confirm site directory exists after download
+        run: ls -R ./site/
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
