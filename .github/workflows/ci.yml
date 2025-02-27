@@ -28,10 +28,7 @@ jobs:
     steps:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: my-artifact-${{ matrix.runs-on }}
-          path: my-artifact-${{ matrix.runs-on }}
-      - run: ls -R my-artifact-${{ matrix.runs-on }}
+      - run: ls -R
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -54,6 +51,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
 
 
 
