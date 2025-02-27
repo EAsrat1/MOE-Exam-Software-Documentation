@@ -6,75 +6,32 @@ on:
       - main
 
 jobs:
-  upload:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.runs-on }}
     steps:
-      - name: Create a file
-        run: echo "hello world" > my-file.txt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create a File
+        run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
-          path: my-file.txt
-
-  upload-again:
-    needs: upload
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create a different file
-        run: echo "goodbye world" > my-file.txt
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: my-file.txt
-          overwrite: true
+          name: my-artifact-${{ matrix.runs-on }}
+          path: file-${{ matrix.runs-on }}.txt
 
   download:
-    needs: upload-again
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: my-artifact
-          path: my-artifact
-      - run: ls -R my-artifact
-
-  build:
-    needs: upload-again
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install mkdocs mkdocs-material
-      - name: Install markdownlint-cli2
-        run: |
-          npm install -g markdownlint-cli2
-      - name: Change to github-changelog directory
-        run: cd github-changelog
-      - name: Show git log of main branch
-        run: git log main
-      - name: Build MkDocs site
-        run: mkdocs build
-      - name: Remove symlinks and hard links
-        run: |
-          find site -type l -exec rm -f {} \;
-      - name: Ensure size limit
-        run: |
-          TOTAL_SIZE=$(du -sh site | cut -f1)
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          name: github-pages
-          path: ./site
+          name: my-artifact-${{ matrix.runs-on }}
+          path: my-artifact-${{ matrix.runs-on }}
+      - run: ls -R my-artifact-${{ matrix.runs-on }}
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -97,6 +54,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
 
 
 
