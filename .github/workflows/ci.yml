@@ -33,6 +33,11 @@ jobs:
           source venv/bin/activate
           mkdocs build
 
+      - name: Debug virtual environment
+        run: |
+          source venv/bin/activate
+          which mkdocs
+
       - name: Deploy to GitHub Pages
         run: |
           source venv/bin/activate
@@ -73,6 +78,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
+
 
              
         
