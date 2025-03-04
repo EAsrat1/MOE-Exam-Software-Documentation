@@ -1,5 +1,9 @@
 name: Deploy MkDocs site to GitHub Pages
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   push:
     branches:
@@ -38,7 +42,7 @@ jobs:
           source venv/bin/activate
           mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_DEPLOY_TOKEN }}
 
   download:
     needs: build
@@ -78,8 +82,9 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_DEPLOY_TOKEN }}
           publish_dir: ./build
+
 
 
 
