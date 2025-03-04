@@ -33,11 +33,6 @@ jobs:
           source venv/bin/activate
           mkdocs build
 
-      - name: Debug virtual environment
-        run: |
-          source venv/bin/activate
-          which mkdocs
-
       - name: Deploy to GitHub Pages
         run: |
           source venv/bin/activate
@@ -67,6 +62,13 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Check for package.json
+        run: |
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found!"
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm install
 
@@ -78,6 +80,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
+
 
 
              
