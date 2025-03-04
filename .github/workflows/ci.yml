@@ -1,17 +1,17 @@
-name: Build and Deploy MkDocs Site
-
-permissions:
-  contents: write
-  pull-requests: write
+name: Deploy MkDocs site to GitHub Pages
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,77 +21,18 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Create and activate virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-
       - name: Install dependencies
         run: |
-          source venv/bin/activate
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install mkdocs mkdocs-material
 
       - name: Build MkDocs site
-        run: |
-          source venv/bin/activate
-          mkdocs build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: my-artifact
-          path: ./site
+        run: mkdocs build
 
       - name: Deploy to GitHub Pages
-        run: |
-          source venv/bin/activate
-          mkdocs gh-deploy --force
+        run: mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_DEPLOY_TOKEN }}
-
-  download:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: my-artifact
-          path: ./downloaded-artifact
-
-      - name: List downloaded artifact files
-        run: ls -R ./downloaded-artifact
-
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-
-      - name: Check for package.json
-        run: |
-          if [ ! -f package.json ]; then
-            echo "Error: package.json not found!"
-            exit 1
-          fi
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GH_DEPLOY_TOKEN }}
-          publish_dir: ./build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
 
