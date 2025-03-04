@@ -1,4 +1,4 @@
-name: Deploy MkDocs site to GitHub Pages
+name: Build and Deploy MkDocs Site
 
 permissions:
   contents: write
@@ -37,6 +37,12 @@ jobs:
           source venv/bin/activate
           mkdocs build
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: ./site
+
       - name: Deploy to GitHub Pages
         run: |
           source venv/bin/activate
@@ -48,12 +54,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download All Artifacts
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: my-artifact
-          path: my-artifact
-      - run: ls -R my-artifact
+          path: ./downloaded-artifact
+
+      - name: List downloaded artifact files
+        run: ls -R ./downloaded-artifact
 
   build-and-deploy:
     runs-on: ubuntu-latest
